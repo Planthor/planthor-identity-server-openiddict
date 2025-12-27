@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PlanthorIdentityServer.Tests/PlanthorIdentityServer.Tests.csproj" />
+    <Project Path="src/PlanthorIdentityServer/PlanthorIdentityServer.csproj" />
+  </Folder>
+</Solution>
