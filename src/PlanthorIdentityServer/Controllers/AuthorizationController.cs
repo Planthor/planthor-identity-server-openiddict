@@ -16,23 +16,28 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace PlanthorIdentityServer.Controllers;
 
+[Route("/")]
 public class AuthorizationController : Controller
 {
     private readonly IOpenIddictApplicationManager _applicationManager;
     private readonly IOpenIddictAuthorizationManager _authorizationManager;
     private readonly IOpenIddictScopeManager _scopeManager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly TimeProvider _timeProvider;
 
     public AuthorizationController(
         IOpenIddictApplicationManager applicationManager,
         IOpenIddictAuthorizationManager authorizationManager,
         IOpenIddictScopeManager scopeManager,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        TimeProvider timeProvider
+        )
     {
         _applicationManager = applicationManager;
         _authorizationManager = authorizationManager;
         _userManager = userManager;
         _scopeManager = scopeManager;
+        _timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -47,8 +52,8 @@ public class AuthorizationController : Controller
     /// <response code="302">Redirects the user to the login page or back to the client application.</response>
     /// <response code="400">Returned if the OpenID Connect request is invalid.</response>
     /// <response code="403">Returned if the user is not authorized or consent is required but prompt=none was sent.</response>
-    [HttpGet("~/connect/authorize")]
-    [HttpPost("~/connect/authorize")]
+    [HttpGet("connect/authorize")]
+    [HttpPost("connect/authorize")]
     [IgnoreAntiforgeryToken]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status302Found)]
@@ -65,7 +70,7 @@ public class AuthorizationController : Controller
                 || request.MaxAge == 0
                 || (request.MaxAge is not null
                     && result.Properties.IssuedUtc is not null
-                    && TimeProvider.System.GetUtcNow() - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value)))
+                    && _timeProvider.GetUtcNow() - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value)))
                 && TempData["IgnoreAuthenticationChallenge"] is null or false))
         {
             if (request.HasPromptValue(PromptValues.None))
