@@ -16,29 +16,23 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace PlanthorIdentityServer.Controllers;
 
+/// <summary>
+/// Controls the OpenID Connect authorization flow, handling user authentication, 
+/// consent negotiation, and authorization code issuance.
+/// </summary>
 [Route("/")]
-public class AuthorizationController : Controller
+public class AuthorizationController(
+    IOpenIddictApplicationManager applicationManager,
+    IOpenIddictAuthorizationManager authorizationManager,
+    IOpenIddictScopeManager scopeManager,
+    UserManager<ApplicationUser> userManager,
+    TimeProvider timeProvider) : Controller
 {
-    private readonly IOpenIddictApplicationManager _applicationManager;
-    private readonly IOpenIddictAuthorizationManager _authorizationManager;
-    private readonly IOpenIddictScopeManager _scopeManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly TimeProvider _timeProvider;
-
-    public AuthorizationController(
-        IOpenIddictApplicationManager applicationManager,
-        IOpenIddictAuthorizationManager authorizationManager,
-        IOpenIddictScopeManager scopeManager,
-        UserManager<ApplicationUser> userManager,
-        TimeProvider timeProvider
-        )
-    {
-        _applicationManager = applicationManager;
-        _authorizationManager = authorizationManager;
-        _userManager = userManager;
-        _scopeManager = scopeManager;
-        _timeProvider = timeProvider;
-    }
+    private readonly IOpenIddictApplicationManager _applicationManager = applicationManager;
+    private readonly IOpenIddictAuthorizationManager _authorizationManager = authorizationManager;
+    private readonly IOpenIddictScopeManager _scopeManager = scopeManager;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly TimeProvider _timeProvider = timeProvider;
 
     /// <summary>
     /// Handles the OpenID Connect authorization request.
@@ -120,13 +114,17 @@ public class AuthorizationController : Controller
             case ConsentTypes.Implicit:
             case ConsentTypes.External when authorizations.Count is not 0:
             case ConsentTypes.Explicit when authorizations.Count is not 0 && !request.HasPromptValue(PromptValues.Consent):
-                var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
+                var identity = new ClaimsIdentity(
+                    TokenValidationParameters.DefaultAuthenticationType,
+                    Claims.Name,
+                    Claims.Role);
                 // Add the claims that will be persisted in the tokens.
-                identity.SetClaim(Claims.Subject, await _userManager.GetUserIdAsync(user))
-                        .SetClaim(Claims.Email, await _userManager.GetEmailAsync(user))
-                        .SetClaim(Claims.Name, await _userManager.GetUserNameAsync(user))
-                        .SetClaim(Claims.PreferredUsername, await _userManager.GetUserNameAsync(user))
-                        .SetClaims(Claims.Role, [.. await _userManager.GetRolesAsync(user)]);
+                identity
+                    .SetClaim(Claims.Subject, await _userManager.GetUserIdAsync(user))
+                    .SetClaim(Claims.Email, await _userManager.GetEmailAsync(user))
+                    .SetClaim(Claims.Name, await _userManager.GetUserNameAsync(user))
+                    .SetClaim(Claims.PreferredUsername, await _userManager.GetUserNameAsync(user))
+                    .SetClaims(Claims.Role, [.. await _userManager.GetRolesAsync(user)]);
 
                 // Note: in this sample, the granted scopes match the requested scope
                 // but you may want to allow the user to uncheck specific scopes.
@@ -137,16 +135,13 @@ public class AuthorizationController : Controller
                 // Automatically create a permanent authorization to avoid requiring explicit consent
                 // for future authorization or token requests containing the same scopes.
                 var authorization = authorizations.LastOrDefault();
-                if (authorization == null)
-                {
-                    authorization = await _authorizationManager.CreateAsync(
-                        identity,
-                        await _userManager.GetUserIdAsync(user),
-                        await _applicationManager.GetIdAsync(application) ?? throw new InvalidOperationException("Invalid application operation"),
-                        AuthorizationTypes.Permanent,
-                        identity.GetScopes()
-                    );
-                }
+                authorization ??= await _authorizationManager.CreateAsync(
+                    identity,
+                    await _userManager.GetUserIdAsync(user),
+                    await _applicationManager.GetIdAsync(application) ?? throw new InvalidOperationException("Invalid application operation"),
+                    AuthorizationTypes.Permanent,
+                    identity.GetScopes()
+                );
 
                 identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
                 identity.SetDestinations(GetDestinations);

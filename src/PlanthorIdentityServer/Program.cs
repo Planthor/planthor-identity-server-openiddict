@@ -112,6 +112,8 @@ public class Program
                 options.UseAspNetCore();
             });
 
+        builder.Services.AddHostedService<DataSeedWorker>();
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
