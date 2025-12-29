@@ -1,9 +1,6 @@
 using System.Net;
 
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-
-using OpenIddict.Abstractions;
 
 namespace PlanthorIdentityServer.Tests.Controllers;
 
@@ -15,7 +12,12 @@ public class AuthorizationControllerTest : IClassFixture<IdentityServerFactory<P
     public AuthorizationControllerTest(IdentityServerFactory<Program> factory)
     {
         _factory = factory;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        _client = factory.CreateClient(
+            new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false,
+                BaseAddress = new Uri("https://localhost:44313/")
+            });
     }
 
     [Fact]
@@ -33,6 +35,7 @@ public class AuthorizationControllerTest : IClassFixture<IdentityServerFactory<P
 
         // Request with max_age=10 (seconds)
         var response = await _client.GetAsync("/connect/authorize?client_id=test-app&max_age=10&response_type=code...");
+        string content = await response.Content.ReadAsStringAsync();
 
         // 3. Assert: Since 1 hour > 10 seconds, it should Challenge (302 to Login)
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
