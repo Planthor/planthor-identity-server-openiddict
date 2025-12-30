@@ -103,6 +103,35 @@ public class Program
                        .EnableUserInfoEndpointPassthrough()
                        .EnableStatusCodePagesIntegration();
             })
+            .AddClient(options =>
+            {
+                // Note: this sample uses the code flow, but you can enable the other flows if necessary.
+                options.AllowAuthorizationCodeFlow().AllowRefreshTokenFlow();
+
+                // Register the signing and encryption credentials used to protect
+                // sensitive data like the state tokens produced by OpenIddict.
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
+
+                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                options.UseAspNetCore()
+                       .EnableStatusCodePagesIntegration()
+                       .EnableRedirectionEndpointPassthrough();
+
+                // Register the System.Net.Http integration and use the identity of the current
+                // assembly as a more specific user agent, which can be useful when dealing with
+                // providers that use the user agent as a way to throttle requests (e.g Reddit).
+                options.UseSystemNetHttp()
+                       .SetProductInformation(typeof(Program).Assembly);
+
+                options
+                    .UseWebProviders()
+                    .AddFacebook(options => 
+                        options
+                            .SetClientId("<>") // TODO: PLT: get ClientId from EnvVariable
+                            .SetClientSecret("") // TODO: PLT: get ClientSecret from EnvVariable
+                            .SetRedirectUri("callback/login/facebook"));
+            })
             .AddValidation(options =>
             {
                 // Import the configuration from the local OpenIddict server instance.
