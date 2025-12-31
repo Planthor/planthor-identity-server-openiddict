@@ -51,6 +51,8 @@ dotnet reportgenerator -reports:".\TestResults\{Guid}\coverage.cobertura.xml" -t
 
 We are applying AspNetCore DefaultUI, override these Views if required:
 
+Default ViewStart is located in `Areas/Identity/Pages`
+
 Account._StatusMessage
 Account.AccessDenied
 Account.ConfirmEmail
