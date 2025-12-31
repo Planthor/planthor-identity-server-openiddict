@@ -35,7 +35,6 @@ public class AuthorizationControllerTest : IClassFixture<IdentityServerFactory<P
 
         // Request with max_age=10 (seconds)
         var response = await _client.GetAsync("/connect/authorize?client_id=client-test&response_type=code&code_challenge=hKpKupTM391pE10xfQiorMxXarRKAHRhTfH_xkGf7U4");
-        string content = await response.Content.ReadAsStringAsync();
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
