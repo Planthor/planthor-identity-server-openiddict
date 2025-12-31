@@ -24,6 +24,15 @@ dotnet tool restore
 dotnet clean; dotnet restore; dotnet build; dotnet test
 ```
 
+- Update Facebook Authentication environment variable:
+  - Option #1: Update the appsetting.Development.json value directly.
+  - Option #2: Run the bash script
+
+```bash
+$env:Authentication__Facebook__ClientId = "YOUR_CLIENT_ID_HERE";
+$env:Authentication__Facebook__ClientSecret = "YOUR_CLIENT_SECRET_HERE";
+```
+
 #### Local Code Coverage
 
 - Use Coverlet

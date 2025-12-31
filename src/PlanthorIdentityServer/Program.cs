@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using PlanthorIdentityServer.Data;
+using PlanthorIdentityServer.Options;
 
 using Quartz;
 
@@ -10,14 +11,25 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace PlanthorIdentityServer;
 
+/// <summary>
+/// The main entry point for the Planthor Identity Server application.
+/// </summary>
 public class Program
 {
     // Prevent Program from being instantiated unintendedly.
     private Program() { }
 
+    /// <summary>
+    /// The main method responsible for configuring the application builder, services, and pipeline.
+    /// </summary>
+    /// <param name="args">Command-line arguments passed to the application.</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // Bind Facebook Options from Configuration
+        var facebookOptions = new FacebookOptions();
+        builder.Configuration.GetSection(FacebookOptions.SectionName).Bind(facebookOptions);
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
@@ -126,10 +138,10 @@ public class Program
 
                 options
                     .UseWebProviders()
-                    .AddFacebook(options => 
+                    .AddFacebook(options =>
                         options
-                            .SetClientId("<>") // TODO: PLT: get ClientId from EnvVariable
-                            .SetClientSecret("") // TODO: PLT: get ClientSecret from EnvVariable
+                            .SetClientId(facebookOptions.ClientId)
+                            .SetClientSecret(facebookOptions.ClientSecret)
                             .SetRedirectUri("callback/login/facebook"));
             })
             .AddValidation(options =>
