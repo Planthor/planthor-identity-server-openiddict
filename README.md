@@ -24,3 +24,16 @@ dotnet tool restore
 dotnet clean; dotnet restore; dotnet build; dotnet test
 ```
 
+#### Local Code Coverage
+
+- Use Coverlet
+
+```bash
+dotnet test --collect:"XPlat Code Coverage";
+```
+
+- Generate report
+
+```bash
+dotnet reportgenerator -reports:".\TestResults\{Guid}\coverage.cobertura.xml" -targetdir:".\TestResults\{Guid}\ReportGenerator"
+```

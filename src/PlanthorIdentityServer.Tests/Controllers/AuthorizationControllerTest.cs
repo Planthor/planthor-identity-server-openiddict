@@ -21,7 +21,7 @@ public class AuthorizationControllerTest : IClassFixture<IdentityServerFactory<P
     }
 
     [Fact]
-    public async Task Authorize_WhenMaxAgeExceeded_ShouldRedirectToLogin()
+    public async Task Authorize_FirstTimeLogin_ShouldRedirectToLogin()
     {
         // 1. Arrange: Setup a user session issued "Now"
         var loginTime = DateTimeOffset.UtcNow;
@@ -30,14 +30,14 @@ public class AuthorizationControllerTest : IClassFixture<IdentityServerFactory<P
         // TODO - Trung: Mock a login session (usually done via a test-specific auth handler or seed data)
         // await SeedRequiredData();
 
-        // 2. Act: Advance time by 1 hour
-        _factory.FakeTime.Advance(TimeSpan.FromHours(1));
+        // // 2. Act: Advance time by 1 hour
+        // _factory.FakeTime.Advance(TimeSpan.FromHours(1));
 
         // Request with max_age=10 (seconds)
-        var response = await _client.GetAsync("/connect/authorize?client_id=test-app&max_age=10&response_type=code...");
+        var response = await _client.GetAsync("/connect/authorize?client_id=client-test&response_type=code&code_challenge=hKpKupTM391pE10xfQiorMxXarRKAHRhTfH_xkGf7U4");
         string content = await response.Content.ReadAsStringAsync();
 
-        // 3. Assert: Since 1 hour > 10 seconds, it should Challenge (302 to Login)
+        // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.NotNull(response);
         Assert.NotNull(response.Headers.Location);
