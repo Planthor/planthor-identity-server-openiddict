@@ -387,3 +387,19 @@ dotnet_naming_style.s_camelcase.required_suffix =
 dotnet_naming_style.s_camelcase.word_separator = 
 dotnet_naming_style.s_camelcase.capitalization = camel_case
 
+# ==============================================================================
+# Web Frontend Files (HTML, CSS, JS, Razor, JSON)
+# ==============================================================================
+
+[*.{html,htm,css,scss,sass,less,js,jsx,ts,tsx,vue,json,yml,yaml,md,cshtml,razor}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Specific overrides for compiled CSS if necessary (though usually ignored)
+[*.min.css]
+indent_style = ignore
+trim_trailing_whitespace = false

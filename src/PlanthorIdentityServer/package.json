@@ -1,0 +1,16 @@
+{
+  "name": "planthor-identity-server",
+  "version": "0.0.1",
+  "description": "This is the IDP application that includes UI and Backend and DB support Identity Management for Planthor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Planthor",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
