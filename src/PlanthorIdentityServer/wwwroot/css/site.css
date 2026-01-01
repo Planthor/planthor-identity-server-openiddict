@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom Font */
+  --font-sans: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Brand Colors if you want to be precise */
+  --color-brand-blue: #228be6;
+  --color-fb-blue: #4E6297;
+}
+

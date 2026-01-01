@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - Planthor Identity</title>
+  <link href="~/css/site.min.css" rel="stylesheet" media="screen" asp-append-version="true" />
+  <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+</head>
+
+<body
+  class="min-h-screen flex flex-col bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 font-sans text-slate-800">
+  <header class="bg-white px-4 py-3 flex items-center justify-between shadow-sm lg:px-12">
+    <div class="flex items-center gap-8">
+      <!-- Logo TODO: use P as image -->
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold italic">P
+        </div>
+        <a class="hidden md:block font-black text-xl tracking-tight uppercase" asp-area=""
+          asp-page="/Index">Planthor</a>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <partial name="_LoginPartial" />
+    </div>
+
+  </header>
+
+  <div>
+    <main role="main" class="flex-grow flex items-center justify-center p-6">
+      @RenderBody()
+    </main>
+  </div>
+
+  <footer class="bg-black text-white px-8 py-4 text-sm">
+    <div>
+      &copy; 2026 - Planthor Identity
+    </div>
+  </footer>
+
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
